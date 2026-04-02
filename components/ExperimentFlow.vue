@@ -3,7 +3,21 @@
     <!-- Flow Diagram Section (40%) -->
     <div class="flow-section">
       <div class="flow-nodes">
-        <!-- 5 FlowNode components -->
+        <div
+          v-for="(node, index) in flowNodes"
+          :key="index"
+          class="flow-node"
+          :class="{ 'active': index === 0 }"
+        >
+          <div class="node-icon">{{ node.icon }}</div>
+          <div class="node-label">{{ node.label }}</div>
+          <div class="node-sublabel">{{ node.subLabel }}</div>
+        </div>
+
+        <!-- Arrow connectors -->
+        <div class="flow-arrows">
+          <div v-for="i in 4" :key="i" class="arrow">→</div>
+        </div>
       </div>
     </div>
 
@@ -17,7 +31,92 @@
 </template>
 
 <style scoped>
-/* Styles here */
+.experiment-flow {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+}
+
+.flow-section {
+  height: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.flow-nodes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 900px;
+  position: relative;
+}
+
+.flow-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.flow-node:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+  border-color: #81C784;
+}
+
+.flow-node.active {
+  border-color: #4CAF50;
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+}
+
+.node-icon {
+  font-size: 2rem;
+}
+
+.node-label {
+  font-weight: 600;
+  color: #2E7D32;
+  font-size: 0.95rem;
+}
+
+.node-sublabel {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.flow-arrows {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-around;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.arrow {
+  color: #4CAF50;
+  font-size: 1.5rem;
+  font-weight: bold;
+  opacity: 0.6;
+}
 </style>
 
 <script setup>
