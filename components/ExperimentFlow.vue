@@ -240,6 +240,32 @@
 .card-details.visible {
   max-height: 200px;
 }
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.4); }
+  50% { box-shadow: 0 0 30px rgba(76, 175, 80, 0.6); }
+}
+
+.flow-node.active {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .flow-nodes {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .flow-arrows {
+    display: none;
+  }
+}
 </style>
 
 <script setup>
