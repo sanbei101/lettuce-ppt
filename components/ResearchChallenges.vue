@@ -48,19 +48,27 @@
       <div class="strategies-grid">
         <div class="strategy-item">
           <div class="strategy-label">分割侧</div>
-          <div class="strategy-desc">采用 retina_masks=True 与低置信度阈值保留目标区域</div>
+          <div class="strategy-desc">
+            采用 YOLO26m-seg 模型进行20 epochs训练<br>
+            设置 retina_masks=True 生成高分辨率掩码<br>
+            使用低置信度阈值(conf=0.01)保留目标区域
+          </div>
         </div>
         <div class="strategy-item">
           <div class="strategy-label">特征侧</div>
-          <div class="strategy-desc">通过掩码并集与空掩码兜底逻辑提升统计稳定性</div>
+          <div class="strategy-desc">
+            对多实例掩码取并集融合<br>
+            masks.max(dim=0) 逐像素合并<br>
+            bool().sum() 统计前景像素总数
+          </div>
         </div>
         <div class="strategy-item">
           <div class="strategy-label">回归侧</div>
-          <div class="strategy-desc">对比线性、多项式与随机森林，选择泛化能力更优模型</div>
-        </div>
-        <div class="strategy-item">
-          <div class="strategy-label">流程侧</div>
-          <div class="strategy-desc">采用两阶段方案弥补YOLO无法直接预测鲜重的能力缺口</div>
+          <div class="strategy-desc">
+            对比线性、多项式与随机森林回归模型<br>
+            以像素面积为输入进行鲜重预测<br>
+            随机森林效果最优(R²=0.9613)
+          </div>
         </div>
       </div>
     </div>
@@ -138,8 +146,8 @@
 
 .strategies-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
 
 .strategy-item {
@@ -147,15 +155,15 @@
 }
 
 .strategy-label {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #4CAF50;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .strategy-desc {
   font-size: 0.75rem;
   color: white;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 </style>
