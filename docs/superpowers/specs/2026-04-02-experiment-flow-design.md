@@ -80,8 +80,13 @@ Scientific infographic meets modern dashboard — structured, data-forward, with
 - Each card: glass-morphism surface, rounded corners, shadow
 - Card contents:
   - Header: stage number badge + Chinese title
-  - Body: key description text + code snippet
-  - Expandable: click header to toggle code details
+  - Body: one-line brief description + expanded technical details
+  - Expandable: click header to toggle technical description
+
+**卡片内容（三阶段）：**
+1. **实例分割阶段** — YOLO26m-seg 模型对顶视图像进行单类别实例分割，输出生菜叶片的边界掩码。关键在于 retina_masks=True 生成高分辨率掩码，保证面积统计精度。
+2. **像素特征构建** — 将多实例掩码逐像素取并集融合，统计前景像素总数作为面积代理变量。该特征消除了实例数量的差异，直接反映叶片投影面积。
+3. **鲜重回归建模** — 以像素面积为输入，分别尝试线性、二次多项式与随机森林回归。通过测试集 R² 评估各模型拟合能力，选出最优方案。
 
 ---
 
@@ -111,7 +116,7 @@ Scientific infographic meets modern dashboard — structured, data-forward, with
 - **States:** default (muted), hover (scaled + glow), active (green highlight + pulse)
 
 ### DetailCard
-- **Props:** `title` (string), `description` (string), `code` (string), `lang` (string, default 'python')
+- **Props:** `title` (string), `description` (string), `details` (string, technical natural language)
 - **States:** collapsed (default), expanded, hover (lift shadow)
 
 ### FlowConnector (arrows between nodes)
@@ -140,5 +145,5 @@ slides.md content → Hardcoded stage data in component
 ### Key Implementation Notes
 - Use `<script setup>` syntax
 - Cards use `v-for` with index tracking for accordion
-- Code snippets stored as template literals for simplicity
+- Stage details stored as template literals containing natural language descriptions
 - No build-time dependencies beyond what's in package.json
