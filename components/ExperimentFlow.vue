@@ -24,7 +24,28 @@
     <!-- Detail Cards Section (60%) -->
     <div class="cards-section">
       <div class="cards-grid">
-        <!-- 3 DetailCard components -->
+        <div
+          v-for="(stage, index) in stages"
+          :key="stage.id"
+          class="detail-card"
+          :class="{ 'expanded': expandedIndex === index }"
+        >
+          <div class="card-header" @click="expandedIndex = expandedIndex === index ? null : index">
+            <div class="card-badge">{{ stage.id }}</div>
+            <div class="card-title-group">
+              <div class="card-title">{{ stage.title }}</div>
+              <div class="card-label">{{ stage.label }}</div>
+            </div>
+            <div class="card-toggle">{{ expandedIndex === index ? '▲' : '▼' }}</div>
+          </div>
+
+          <div class="card-body">
+            <p class="card-description">{{ stage.description }}</p>
+            <div class="card-details" :class="{ 'visible': expandedIndex === index }">
+              <p>{{ stage.details }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -116,6 +137,108 @@
   font-size: 1.5rem;
   font-weight: bold;
   opacity: 0.6;
+}
+
+.cards-section {
+  height: 60%;
+  padding: 0 0.5rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  height: 100%;
+}
+
+.detail-card {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.detail-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
+}
+
+.detail-card.expanded {
+  border-color: #4CAF50;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  cursor: pointer;
+  background: linear-gradient(135deg, #f8fff8 0%, #f0f7f0 100%);
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.card-badge {
+  width: 2rem;
+  height: 2rem;
+  background: #4CAF50;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  flex-shrink: 0;
+}
+
+.card-title-group {
+  flex: 1;
+}
+
+.card-title {
+  font-weight: 600;
+  color: #2E7D32;
+  font-size: 1rem;
+}
+
+.card-label {
+  font-size: 0.75rem;
+  color: #81C784;
+  font-family: monospace;
+}
+
+.card-toggle {
+  color: #4CAF50;
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.card-body {
+  padding: 1.25rem;
+  flex: 1;
+}
+
+.card-description {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+  color: #333;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.card-details.visible {
+  max-height: 200px;
 }
 </style>
 
