@@ -48,11 +48,6 @@ layoutClass: gap-x-8
 为此,本研究聚焦于利用计算机视觉与机器学习技术,实现基于顶视 RGB 图像的生菜鲜重无损估算,为北京菜篮子工程提供智能化表型监测解决方案。
 
 ---
-
-
-
-
----
 layout: section
 ---
 
@@ -62,29 +57,41 @@ layout: section
 
 # 实验总体设计
 
-本实验围绕"分割质量是否足以支撑鲜重估算"这一核心问题展开,采用两阶段建模策略:首先以 `YOLO26m-seg` 对温室顶视图像进行实例分割,提取并融合掩码得到 `lettuce_pixels` 面积特征;随后以该特征为输入,分别构建线性回归、二次多项式回归与随机森林模型进行鲜重拟合。通过对比分割指标与回归 $R^2$ 表现,验证像素面积作为无损表型代理变量的有效性与稳定性。
-
-- 输入:统一成像条件下的生菜顶视 RGB 图像
-- 中间变量:实例掩码融合后的前景像素总数 `lettuce_pixels`
-- 输出:生菜鲜重预测值 `LFW`
+<ExperimentFlow />
 
 
 ---
-
+layout: two-cols
+layoutClass: gap-x-8
+---
 # 数据集介绍
 
+## 数据采集
+<div class="grid grid-cols-3 gap-3 mt-4 *:w-30 mb-4">
+  <img src="./images/sample5.jpg" class="rounded shadow border border-gray-200" />
+  <img src="./images/sample2.jpg" class="rounded shadow border border-gray-200" />
+  <img src="./images/sample3.jpg" class="rounded shadow border border-gray-200" />
+  <img src="./images/sample1.jpg" class="rounded shadow border border-gray-200" />
+  <img src="./images/sample6.jpg" class="rounded shadow border border-gray-200" />
+  <img src="./images/sample4.jpg" class="rounded shadow border border-gray-200" />
+</div>
 
-## 数据来源与标注
+> 在温室环境下,通过固定高度与俯视角度拍摄生菜顶视图像,在不同生长阶段采集了 100 张图像样本,每张图像对应一个生菜样本的鲜重测量值。
 
-- 数据来源:温室场景下固定高度顶视采集的生菜图像,并配套人工测量鲜重标签 `LFW`
-- 标注形式:单类别实例分割标注,目标为生菜叶片可见区域
-- 数据组织:遵循 `train/val/test` 划分,统一尺寸为 `640 × 640`
+::right::
 
-## 用于建模的关键字段
+## 数据标注
+在`roboflow`平台上进行单类别实例分割标注,每个生菜样本的目标区域被精确分割成掩码
+<div class="grid grid-cols-3 gap-4 mb-4">
+  <img src="./images/1.png" alt="标注示例1" class="max-w-full max-h-[40vh] object-contain" />
+  <img src="./images/2.png" alt="标注示例2" class="max-w-full max-h-[40vh] object-contain" />
+  <img src="./images/3.png" alt="标注示例3" class="max-w-full max-h-[40vh] object-contain" />
+  <img src="./images/4.png" alt="标注示例4" class="max-w-full max-h-[40vh] object-contain" />
+  <img src="./images/5.png" alt="标注示例5" class="max-w-full max-h-[40vh] object-contain" />
+</div>
 
-- `image`:样本图像文件名,用于匹配推理输入
-- `LFW`:目标变量,表示生菜鲜重
-- `lettuce_pixels`:由分割掩码统计得到的面积特征
+> 每个图像样本的生菜区域被精确分割成掩码,以供计算出每株生菜的像素面积特征,并与对应的鲜重测量值进行回归建模
+
 
 ---
 

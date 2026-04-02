@@ -97,7 +97,7 @@
   flex-direction: column;
   height: 100%;
   padding: 1.5rem;
-  background: #1a1a1a;
+  background: #f0f9f0;
 }
 
 /* Flow Section */
@@ -161,9 +161,9 @@
 .detail-card {
   position: relative;
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(76, 175, 80, 0.3);
+  color: #1a1a1a;
   display: flex;
   flex-direction: column;
 }
@@ -174,7 +174,7 @@
   right: 1rem;
   font-size: 3rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.1);
+  color: rgba(46, 125, 50, 0.15);
   line-height: 1;
 }
 
@@ -194,7 +194,7 @@
 .card-lines p {
   font-size: 0.875rem;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.8);
+  color: #333;
   margin-bottom: 0.5rem;
 }
 
