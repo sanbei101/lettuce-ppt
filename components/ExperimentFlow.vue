@@ -1,49 +1,89 @@
 <template>
   <div class="experiment-flow">
-    <!-- Flow Diagram Section (40%) -->
+    <!-- Flow Diagram Section -->
     <div class="flow-section">
       <div class="flow-nodes">
-        <div
-          v-for="(node, index) in flowNodes"
-          :key="index"
-          class="flow-node"
-          :class="{ 'active': index === 0 }"
-        >
-          <div class="node-icon">{{ node.icon }}</div>
-          <div class="node-label">{{ node.label }}</div>
-          <div class="node-sublabel">{{ node.subLabel }}</div>
+        <div class="flow-node">
+          <span class="node-icon">🥬</span>
+          <span class="node-label">输入</span>
+          <span class="node-sublabel">温室顶视图像</span>
         </div>
 
-        <!-- Arrow connectors -->
-        <div class="flow-arrows">
-          <div v-for="i in 4" :key="i" class="arrow">→</div>
+        <svg class="flow-arrow" viewBox="0 0 50 20">
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+        </svg>
+
+        <div class="flow-node">
+          <span class="node-icon">🔬</span>
+          <span class="node-label">分割</span>
+          <span class="node-sublabel">YOLO26m-seg</span>
+        </div>
+
+        <svg class="flow-arrow" viewBox="0 0 50 20">
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+        </svg>
+
+        <div class="flow-node">
+          <span class="node-icon">🔢</span>
+          <span class="node-label">统计</span>
+          <span class="node-sublabel">掩码融合</span>
+        </div>
+
+        <svg class="flow-arrow" viewBox="0 0 50 20">
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+        </svg>
+
+        <div class="flow-node">
+          <span class="node-icon">📊</span>
+          <span class="node-label">回归</span>
+          <span class="node-sublabel">RF/Poly/Linear</span>
+        </div>
+
+        <svg class="flow-arrow" viewBox="0 0 50 20">
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+        </svg>
+
+        <div class="flow-node">
+          <span class="node-icon">⚖️</span>
+          <span class="node-label">预测</span>
+          <span class="node-sublabel">LFW 鲜重</span>
         </div>
       </div>
     </div>
 
-    <!-- Detail Cards Section (60%) -->
+    <!-- Detail Cards Section -->
     <div class="cards-section">
       <div class="cards-grid">
-        <div
-          v-for="(stage, index) in stages"
-          :key="stage.id"
-          class="detail-card"
-          :class="{ 'expanded': expandedIndex === index }"
-        >
-          <div class="card-header" @click="expandedIndex = expandedIndex === index ? null : index">
-            <div class="card-badge">{{ stage.id }}</div>
-            <div class="card-title-group">
-              <div class="card-title">{{ stage.title }}</div>
-              <div class="card-label">{{ stage.label }}</div>
-            </div>
-            <div class="card-toggle">{{ expandedIndex === index ? '▲' : '▼' }}</div>
+        <!-- Card 1: 实例分割 -->
+        <div class="detail-card">
+          <div class="card-number">01</div>
+          <div class="card-title">实例分割</div>
+          <div class="card-sublable">YOLO26m-seg</div>
+          <div class="card-lines">
+            <p>采用 YOLO26 模型对生菜进行单类别实例分割</p>
+            <p>输出生菜叶片的边界掩码</p>
           </div>
+        </div>
 
-          <div class="card-body">
-            <p class="card-description">{{ stage.description }}</p>
-            <div class="card-details" :class="{ 'visible': expandedIndex === index }">
-              <p>{{ stage.details }}</p>
-            </div>
+        <!-- Card 2: 像素特征构建 -->
+        <div class="detail-card">
+          <div class="card-number">02</div>
+          <div class="card-title">像素特征构建</div>
+          <div class="card-sublable">lettuce_pixels</div>
+          <div class="card-lines">
+            <p>多实例掩码逐像素取并集</p>
+            <p>统计前景像素总数作为面积代理变量</p>
+          </div>
+        </div>
+
+        <!-- Card 3: 鲜重回归建模 -->
+        <div class="detail-card">
+          <div class="card-number">03</div>
+          <div class="card-title">鲜重回归建模</div>
+          <div class="card-sublable">R² = 0.9613</div>
+          <div class="card-lines">
+            <p>以像素面积为输入，分别构建线性、多项式与随机森林回归模型</p>
+            <p>随机森林模型效果最优</p>
           </div>
         </div>
       </div>
@@ -56,252 +96,109 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 1rem;
+  padding: 1.5rem;
+  background: #1a1a1a;
 }
 
+/* Flow Section */
 .flow-section {
-  height: 40%;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #f0f9f0 0%, #e8f5e8 100%);
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
+  align-items: center;
+  padding: 1.5rem 0;
+  margin-bottom: 2rem;
 }
 
 .flow-nodes {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 900px;
-  position: relative;
+  justify-content: center;
+  gap: 0;
 }
 
 .flow-node {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   padding: 1rem 1.5rem;
-  background: white;
-  border-radius: 12px;
-  border: 2px solid #e0e0e0;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  z-index: 1;
-}
-
-.flow-node:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
-  border-color: #81C784;
-}
-
-.flow-node.active {
-  border-color: #4CAF50;
-  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  background: #2E7D32;
+  color: white;
 }
 
 .node-icon {
-  font-size: 2rem;
+  font-size: 1.75rem;
 }
 
 .node-label {
+  font-size: 1rem;
   font-weight: 600;
-  color: #2E7D32;
-  font-size: 0.95rem;
 }
 
 .node-sublabel {
   font-size: 0.75rem;
-  color: #666;
+  opacity: 0.8;
 }
 
-.flow-arrows {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-  display: flex;
-  justify-content: space-around;
-  pointer-events: none;
-  z-index: 0;
+.flow-arrow {
+  width: 3rem;
+  height: 1.25rem;
+  flex-shrink: 0;
 }
 
-.arrow {
-  color: #4CAF50;
-  font-size: 1.5rem;
-  font-weight: bold;
-  opacity: 0.6;
-}
-
+/* Cards Section */
 .cards-section {
-  height: 60%;
-  padding: 0 0.5rem;
+  flex: 1;
 }
 
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 2rem;
   height: 100%;
 }
 
 .detail-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 16px;
-  border: 1px solid rgba(76, 175, 80, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  position: relative;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s ease;
-  overflow: hidden;
 }
 
-.detail-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(76, 175, 80, 0.2);
-}
-
-.detail-card.expanded {
-  border-color: #4CAF50;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  cursor: pointer;
-  background: linear-gradient(135deg, #f8fff8 0%, #f0f7f0 100%);
-  border-bottom: 1px solid #e8e8e8;
-}
-
-.card-badge {
-  width: 2rem;
-  height: 2rem;
-  background: #4CAF50;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.card-number {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  font-size: 3rem;
   font-weight: 700;
-  font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.card-title-group {
-  flex: 1;
+  color: rgba(255, 255, 255, 0.1);
+  line-height: 1;
 }
 
 .card-title {
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #2E7D32;
-  font-size: 1rem;
+  margin-bottom: 0.25rem;
 }
 
-.card-label {
-  font-size: 0.75rem;
-  color: #81C784;
-  font-family: monospace;
-}
-
-.card-toggle {
-  color: #4CAF50;
-  font-size: 0.75rem;
-  transition: transform 0.3s ease;
-}
-
-.card-body {
-  padding: 1.25rem;
-  flex: 1;
-}
-
-.card-description {
-  color: #666;
+.card-sublable {
   font-size: 0.875rem;
+  color: #4CAF50;
+  font-family: monospace;
+  margin-bottom: 1rem;
+}
+
+.card-lines p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
   margin-bottom: 0.5rem;
 }
 
-.card-details {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-in-out;
-  color: #333;
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
-.card-details.visible {
-  max-height: 200px;
-}
-
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.4); }
-  50% { box-shadow: 0 0 30px rgba(76, 175, 80, 0.6); }
-}
-
-.flow-node.active {
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@media (max-width: 768px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
-  }
-
-  .flow-nodes {
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  .flow-arrows {
-    display: none;
-  }
+.card-lines p:last-child {
+  margin-bottom: 0;
 }
 </style>
-
-<script setup>
-import { ref } from 'vue'
-
-const stages = [
-  {
-    id: 1,
-    title: '实例分割',
-    label: 'YOLO26m-seg',
-    description: '单类别实例分割',
-    details: 'YOLO26m-seg 模型对顶视图像进行单类别实例分割，输出生菜叶片的边界掩码。关键在于 retina_masks=True 生成高分辨率掩码，保证面积统计精度。'
-  },
-  {
-    id: 2,
-    title: '像素特征构建',
-    label: 'lettuce_pixels',
-    description: '掩码融合与统计',
-    details: '将多实例掩码逐像素取并集融合，统计前景像素总数作为面积代理变量。该特征消除了实例数量的差异，直接反映叶片投影面积。'
-  },
-  {
-    id: 3,
-    title: '鲜重回归建模',
-    label: 'LFW Prediction',
-    description: 'R² = 0.9613',
-    details: '以像素面积为输入，分别尝试线性、二次多项式与随机森林回归。通过测试集 R² 评估各模型拟合能力，选出最优方案。'
-  }
-]
-
-const expandedIndex = ref(null)
-
-const flowNodes = [
-  { icon: '🥬', label: '输入', subLabel: '温室顶视图像' },
-  { icon: '🔬', label: '分割', subLabel: 'YOLO26m-seg' },
-  { icon: '🔢', label: '统计', subLabel: '掩码融合' },
-  { icon: '📊', label: '回归', subLabel: 'RF/Poly/Linear' },
-  { icon: '⚖️', label: '预测', subLabel: 'LFW 鲜重' }
-]
-</script>
