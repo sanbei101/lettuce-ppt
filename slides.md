@@ -79,7 +79,6 @@ layoutClass: gap-x-8
 > 在温室环境下,通过固定高度与俯视角度拍摄生菜顶视图像,在不同生长阶段采集了 100 张图像样本,每张图像对应一个生菜样本的鲜重测量值。
 
 ::right::
-
 ## 数据标注
 在`roboflow`平台上进行单类别实例分割标注,每个生菜样本的目标区域被精确分割成掩码
 <div class="grid grid-cols-3 gap-4 mb-4">
@@ -92,24 +91,6 @@ layoutClass: gap-x-8
 
 > 每个图像样本的生菜区域被精确分割成掩码,以供计算出每株生菜的像素面积特征,并与对应的鲜重测量值进行回归建模
 
-
----
-
-# 实验难点
-
-1. 固定视角依赖:叶片鲜重预测建立在固定高度与俯视角成像前提下,跨视角条件下面积-质量关系可能失稳
-2. 普通 YOLO 任务边界:常规 YOLO 仅输出检测/分割结果,无法直接给出鲜重,必须引入面积特征与回归模型
-3. 叶片遮挡与边界粘连:多叶片重叠导致实例边界模糊,影响掩码完整性
-4. 光照与反光扰动:温室环境中的亮斑与阴影会干扰前景-背景区分
-5. 面积到质量的非线性映射:相同像素面积下可能对应不同鲜重,需更强回归器建模
-6. 流程误差传递:分割阶段的小误差会在像素统计与回归阶段被放大
-
-## 应对策略
-
-- 分割侧:采用 `retina_masks=True` 与较低置信度阈值保留目标区域
-- 特征侧:通过掩码并集与空掩码兜底逻辑提升统计稳定性
-- 回归侧:对比线性、多项式与随机森林,选择泛化能力更优模型
-- 流程侧:采用"YOLO 分割 + 像素统计 + 回归"两阶段方案,弥补普通 YOLO 无法直接预测鲜重的能力缺口
 
 ---
 
@@ -135,7 +116,7 @@ $$
 flowchart LR
   A[温室顶视图像] --> B[YOLO26m-seg 实例分割]
   B --> C[掩码融合与像素统计]
-  C --> D[构建 lettuce_pixels 特征]
+  C --> D[构建 生菜面积像素量 特征]
   D --> E[线性回归 / 二次多项式 / 随机森林]
   E --> F[LFW 鲜重预测]
 ```
@@ -194,7 +175,7 @@ results = model.train(
 
 ---
 
-# 分割性能评估
+# 生菜分割结果与评估
 
 
 ```python
@@ -257,6 +238,38 @@ if masks is not None:
     # 统计掩码中生菜区域的像素总数
     total_pixels = combined_mask.bool().sum().item()
 ```
+---
+layout: two-cols
+layoutClass: gap-x-4
+---
+
+# 像素提取结果展示
+
+<div class="w-full h-full flex flex-col items-center justify-center gap-4 mt-[-40px] ml-[-40px]">
+  <img src="./image.png" alt="掩码提取示例1" class="w-[38%] max-h-[28vh] object-contain" />
+  <div class="w-full flex items-start justify-center gap-4">
+    <img src="./image-1.png" alt="掩码提取示例2" class="w-[38%] max-h-[28vh] object-contain" />
+    <img src="./image-2.png" alt="掩码提取示例3" class="w-[38%] max-h-[28vh] object-contain" />
+  </div>
+</div>
+
+::right::
+
+**上图展示了三个样本的原始图像与对应的掩码提取及像素计算量结果**
+
+由图可以看出,生菜的像素总数和它的重量之间存在明显的正相关关系,这为后续的回归建模提供了基础。
+
+像素量 `->` 叶面积 `->` 生菜长势 `->` 鲜重
+
+<Arrow x1="700" y1="250" x2="700" y2="320" />
+
+<br />
+<br />
+<br />
+<br />
+
+生菜区域的像素总数(`lettuce_pixels`)作为变量特征,将被输入到后续的回归模型中,用于预测生菜鲜重(`LFW`)
+
 
 ---
 layout: section
@@ -299,6 +312,19 @@ print(f"R² (随机森林): {model.score(X_test, y_test):.4f}")
   <img src="./images/image-1.png" alt="回归结果2" class="max-w-full max-h-[40vh] object-contain" />
   <img src="./images/image-3.png" alt="回归结果3" class="max-w-full max-h-[40vh] object-contain col-span-2" />
 </div>
+
+---
+layout: two-cols
+layoutClass: gap-x-4
+---
+
+# 模型部署演示
+
+<img src="./images/12.png" alt="模型部署示例" class="max-w-full max-h-[50vh] object-contain" />
+
+::right::
+
+1
 ---
 
 # 回归结果与统计解释

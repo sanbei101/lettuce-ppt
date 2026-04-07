@@ -10,7 +10,7 @@
         </div>
 
         <svg class="flow-arrow" viewBox="0 0 50 20">
-          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none" />
         </svg>
 
         <div class="flow-node">
@@ -20,7 +20,7 @@
         </div>
 
         <svg class="flow-arrow" viewBox="0 0 50 20">
-          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none" />
         </svg>
 
         <div class="flow-node">
@@ -30,7 +30,7 @@
         </div>
 
         <svg class="flow-arrow" viewBox="0 0 50 20">
-          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none" />
         </svg>
 
         <div class="flow-node">
@@ -40,7 +40,7 @@
         </div>
 
         <svg class="flow-arrow" viewBox="0 0 50 20">
-          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none"/>
+          <path d="M0 10 L40 10 L35 5 M40 10 L35 15" stroke="#4CAF50" stroke-width="2" fill="none" />
         </svg>
 
         <div class="flow-node">
@@ -80,10 +80,9 @@
         <div class="detail-card">
           <div class="card-number">03</div>
           <div class="card-title">鲜重回归建模</div>
-          <div class="card-sublable">R² = 0.9613</div>
           <div class="card-lines">
             <p>以像素面积为输入，分别构建线性、多项式与随机森林回归模型</p>
-            <p>随机森林模型效果最优</p>
+            <p>分别评估各模型性能</p>
           </div>
         </div>
       </div>
