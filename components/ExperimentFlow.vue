@@ -147,6 +147,7 @@
 
 /* Cards Section */
 .cards-section {
+  margin-top: -30px;
   flex: 1;
 }
 
@@ -154,7 +155,7 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  height: 100%;
+  height: 80%;
 }
 
 .detail-card {

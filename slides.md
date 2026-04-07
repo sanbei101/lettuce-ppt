@@ -61,9 +61,50 @@ layout: section
 
 
 ---
+
+# 研究假设与方法框架
+
+## 核心假设
+
+在拍摄高度、视角与分辨率保持一致时,生菜鲜重 $y$ 与分割掩码像素面积 $x$ 满足:
+
+`像素量` $\to$ `叶面积` $\to$ `生菜长势` $\to$ `鲜重`,记为:
+
+$$
+y = f(x) + \epsilon
+$$
+
+
+其中:
+
+- $x$ 为实例分割掩码合并后的前景像素总数
+- $f(\cdot)$ 为待学习的质量映射函数
+- $\epsilon$ 为测量误差、遮挡误差与模型误差
+
+## 技术路线
+
+```mermaid
+flowchart LR
+  A[温室顶视图像] --> B[YOLO26m-seg 实例分割]
+  B --> C[掩码融合与像素统计]
+  C --> D[构建 生菜面积像素量 特征]
+  D --> E[线性回归 / 二次多项式 / 随机森林]
+  E --> F[LFW 鲜重预测]
+```
+
+---
+layout: section
+---
+
+# 生菜分割模型训练
+
+
+
+---
 layout: two-cols
 layoutClass: gap-x-8
 ---
+
 # 数据集介绍
 
 ## 数据采集
@@ -94,62 +135,7 @@ layoutClass: gap-x-8
 
 ---
 
-# 研究假设与方法框架
-
-## 核心假设
-
-在拍摄高度、视角与分辨率保持一致时,生菜鲜重 $y$ 与分割掩码像素面积 $x$ 满足:
-
-$$
-y = f(x) + \epsilon
-$$
-
-其中:
-
-- $x$ 为实例分割掩码合并后的前景像素总数
-- $f(\cdot)$ 为待学习的质量映射函数
-- $\epsilon$ 为测量误差、遮挡误差与模型误差
-
-## 技术路线
-
-```mermaid
-flowchart LR
-  A[温室顶视图像] --> B[YOLO26m-seg 实例分割]
-  B --> C[掩码融合与像素统计]
-  C --> D[构建 生菜面积像素量 特征]
-  D --> E[线性回归 / 二次多项式 / 随机森林]
-  E --> F[LFW 鲜重预测]
-```
-
----
-layout: section
----
-
-# 数据与分割实验
-
----
-
-# 数据采集与样本构成
-
-## 成像条件
-
-- 拍摄方式:固定高度、正上方俯视
-- 图像输入尺寸:统一为 `640 × 640`
-- 标注任务:单类别实例分割,仅分割生菜目标区域
-
-
-<div class="grid grid-cols-3 gap-3 mt-4 *:w-30">
-  <img src="./images/sample5.jpg" class="rounded shadow border border-gray-200" />
-  <img src="./images/sample2.jpg" class="rounded shadow border border-gray-200" />
-  <img src="./images/sample3.jpg" class="rounded shadow border border-gray-200" />
-  <img src="./images/sample1.jpg" class="rounded shadow border border-gray-200" />
-  <img src="./images/sample6.jpg" class="rounded shadow border border-gray-200" />
-  <img src="./images/sample4.jpg" class="rounded shadow border border-gray-200" />
-</div>
-
----
-
-# 分割模型与训练设置
+# 分割模型训练
 
 ## 模型选型
 
@@ -174,6 +160,9 @@ results = model.train(
 ```
 
 ---
+layout: two-cols
+layoutClass: gap-x-4
+---
 
 # 生菜分割结果与评估
 
@@ -186,9 +175,23 @@ print(f"验证集分割 mAP50-95: {metrics.seg.map:.4f}")
 
 | 指标 | 数值 |
 |---|---:|
-| mAP@50 | 0.9950 |
-| mAP@50:95 | 0.9297 |
+| `mAP@50` | `0.9950` |
+| `mAP@50:95` | `0.9297` |
+
 ![预测结果](./images/image.png)
+
+::right::
+
+
+## 分割结果展示
+
+上图展示了模型在验证集上的预测结果,每个生菜实例都被准确地分割成掩码区域,与真实标注高度重合。
+
+## 评估结果解读
+
+模型在 `mAP@50` 和 `mAP@50:95` 上均表现出色,说明模型能够准确地定位和分割生菜实例,为后续的像素特征提取和鲜重回归奠定了坚实基础。
+
+
 ---
 layout: section
 ---
@@ -259,7 +262,7 @@ layoutClass: gap-x-4
 
 由图可以看出,生菜的像素总数和它的重量之间存在明显的正相关关系,这为后续的回归建模提供了基础。
 
-像素量 `->` 叶面积 `->` 生菜长势 `->` 鲜重
+`像素量` $\to$ `叶面积` $\to$ `生菜长势` $\to$ `鲜重`
 
 <Arrow x1="700" y1="250" x2="700" y2="320" />
 
@@ -278,40 +281,49 @@ layout: section
 # 鲜重回归建模
 
 ---
+layout: two-cols
+layoutClass: gap-x-4
+---
 
 ## 线性回归
 
 ```python
 model = LinearRegression()
 model.fit(X_train, y_train)
-print(f"R²: {model.score(X_test, y_test):.4f}")
-print(f"公式: LFW = {model.coef_[0]:.6f} * pixels + {model.intercept_:.4f}")
 ```
 
 ## 二次多项式回归
 
 ```python
-degree = 2
-model = make_pipeline(PolynomialFeatures(degree), LinearRegression())
+model = make_pipeline(
+  PolynomialFeatures(degree), LinearRegression()
+)
 model.fit(X_train, y_train)
-print(f"R² (多项式 degree={degree}): {model.score(X_test, y_test):.4f}")
 ```
 
 ## 随机森林回归
 
 ```python
-model = RandomForestRegressor(n_estimators=100, random_state=42)
+model = RandomForestRegressor(
+  n_estimators=100, random_state=42
+)
 model.fit(X_train, y_train)
-print(f"R² (随机森林): {model.score(X_test, y_test):.4f}")
 ```
+
+::right::
+
+<div class="w-full h-full grid grid-cols-2">
+  <img src="./images/image-2.png" alt="回归结果1" class="max-w-full max-h-[40vh] object-contain" />
+  <img src="./images/image-1.png" alt="回归结果2" class="max-w-full max-h-[40vh] object-contain" />
+  <img src="./images/image-3-1.png" alt="回归结果3" class="max-w-full max-h-[40vh] object-contain col-span-2" />
+</div>
 
 ---
 
-<div class="w-full h-full grid grid-cols-2 grid-rows-2 gap-4 items-center justify-items-center p-4">
-  <img src="./images/image-2.png" alt="回归结果1" class="max-w-full max-h-[40vh] object-contain" />
-  <img src="./images/image-1.png" alt="回归结果2" class="max-w-full max-h-[40vh] object-contain" />
-  <img src="./images/image-3.png" alt="回归结果3" class="max-w-full max-h-[40vh] object-contain col-span-2" />
-</div>
+# 结果分析与模型比较
+
+随机森林回归在生菜鲜重预测任务中表现最佳,测试集 $R^2$ 达到 0.9613,优于线性回归和二次多项式回归,在生菜重量较大时的拟合效果更为显著,说明其能够更好地捕捉像素面积与鲜重之间的关系。
+
 
 ---
 layout: two-cols
